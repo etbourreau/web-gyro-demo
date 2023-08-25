@@ -4,7 +4,8 @@ Vue.createApp({
     setup() {
         return {
             sensors: [],
-            aclData: {},
+            gyro: null,
+            gyroData: {},
             msg: ref(""),
         };
     },
@@ -15,15 +16,15 @@ Vue.createApp({
                 return navigator.permissions.query({ name: perm });
             });
             Promise.all(queries).then((results) => {
-                results.forEach((r, i) => {
-                    console.log(perms[i], r);
-                    this.msg += `${perms[i]} ${r.state}<br/>`;
-                    if (r.state !== "granted") {
-                        navigator.permissions.request({
-                            name: perms[i],
-                        });
-                    }
-                });
+                if (results.every((result) => result.state === "granted")) {
+                    gyro.startTracking(function (o) {
+                        this.gyroData = {
+                            alpha: o.alpha,
+                            beta: o.beta,
+                            gamma: o.gamma,
+                        };
+                    });
+                }
             });
         } catch (e) {
             this.msg = e;
@@ -35,8 +36,8 @@ Vue.createApp({
     },
     template: `
       <div>
-        {{sensors}}<br/>
-        {{aclData}}<br/>
+        {{gyro}}<br/>
+        {{JSON.stringify(gyroData)}}<br/>
         <div v-html="msg"></div>
       </div>
     `,
