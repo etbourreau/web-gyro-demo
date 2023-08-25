@@ -10,6 +10,20 @@ Vue.createApp({
                 beta: 0,
                 gamma: 0,
             }),
+            gyroRanges: {
+                alpha: {
+                    min: 0,
+                    max: 360,
+                },
+                beta: {
+                    min: -180,
+                    max: 180,
+                },
+                gamma: {
+                    min: -90,
+                    max: 90,
+                },
+            },
             msg: ref(""),
         };
     },
@@ -33,28 +47,22 @@ Vue.createApp({
                 });
             })
             .catch((e) => {
-                let aWay = true,
-                    bWay = true,
-                    gWay = true;
-                const step = 2;
+                const ways = {
+                    alpha: true,
+                    beta: true,
+                    gamma: true,
+                };
                 setInterval(() => {
-                    this.gyroData.alpha += step * (aWay ? 1 : -1) * 0.37;
-                    if (this.gyroData.alpha < 0 || this.gyroData.alpha > 360) {
-                        this.gyroData.alpha += aWay ? -step : step;
-                        aWay = !aWay;
-                    }
-                    this.gyroData.beta += step * (bWay ? 1 : -1) * 0.98;
-                    if (this.gyroData.beta < 0 || this.gyroData.beta > 360) {
-                        this.gyroData.beta += bWay ? -step : step;
-                        bWay = !bWay;
-                    }
-                    this.gyroData.gamma += step * (gWay ? 1 : -1) * 1.71;
-                    if (this.gyroData.gamma < 0 || this.gyroData.gamma > 360) {
-                        this.gyroData.gamma += gWay ? -step : step;
-                        gWay = !gWay;
-                    }
-                    ["alpha", "beta", "gamma"].forEach((e) => {
-                        this.gyroData[e] = round(this.gyroData[e]);
+                    ["alpha", "beta", "gamma"].forEach((k) => {
+                        this.gyroData[k] += ways[k] ? 1 : -1;
+                        if (
+                            this.gyroData[k] < this.gyroRanges[k].min ||
+                            this.gyroData[k] > this.gyroRanges[k].max
+                        ) {
+                            this.gyroData[k] += ways[k] ? -2 : 2;
+                            ways[k] = !ways[k];
+                        }
+                        this.gyroData[k] = round(this.gyroData[k]);
                     });
                 }, 100);
             });
@@ -71,7 +79,7 @@ Vue.createApp({
                 <caption>{{k}}</caption>  
                 <div class="w-100 bar border">
                     <div class="h-100" :style="{
-                        width: (gyroData[k] / 360 * 100) + '%',
+                        width: ((gyroData[k] - gyroRanges[k].min) / (gyroRanges[k].max - gyroRanges[k].min) * 100) + '%',
                     }"></div>
                 </div>
             </div>
