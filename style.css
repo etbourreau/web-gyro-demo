@@ -1,0 +1,89 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+body {
+    background-color: #222;
+}
+body,
+#app {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+}
+
+/* GENERAL */
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+h1 {
+    font-size: clamp(3rem, 10vw ,6rem);
+}
+h2 {
+    font-size: clamp(2rem, 4vw ,4rem);
+}
+
+/* PAGES */
+.wrapper {
+    width: 200vw;
+    height: 200vh;
+    height: 200dvh;
+
+    perspective: 50rem;
+}
+.page:nth-child(1) {
+    background: url("./assets/pages/01-bg.webp") no-repeat center center / contain;
+}
+.page:nth-child(1) .visible-content {
+    color: #ddd;
+    text-shadow: 1px 1px 2px #333;
+}
+.page:nth-child(1) .visible-content > .spacer {
+    height: 19vh;
+}
+.page {
+    position: relative;
+    width: 100%;
+    height: 200vh;
+    height: 200dvh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    transform-style: flat;
+    perspective-origin: center;
+    transition: transform .2s;
+
+}
+.page .vert-separator {
+    width: 100%;
+    height: 54vh;
+}
+.page .visible-content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    padding: 56vh 56vw;
+}
+
+.banner {
+    width: 100%;
+    height: 7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(221, 221, 221, .7);
+}
+
+
+/* DEBUG */
+.bar {
+    height: 1rem;
+}
+.bar > div {
+    background-color: #0275d8;
+    transition: width .2s;
+}

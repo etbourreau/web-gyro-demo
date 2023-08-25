@@ -48,33 +48,12 @@ Vue.createApp({
                     this.gyroData.gamma = round(data.do.gamma);
                 });
             })
-            .catch((e) => {
-                window.addEventListener("mousemove", e => {
-                    this.mouse.x = e.clientX;
-                    this.mouse.y = e.clientY;
-                });
-                // debug virtual gyro
-                const ways = {
-                    beta: true,
-                    gamma: true,
-                };
-                setInterval(() => {
-                    ["beta", "gamma"].forEach((k) => {
-                        const step = Math.floor(Math.random() * 40 + 10) / 10;
-                        this.gyroData[k] += ways[k] ? step : -step;
-                        if (
-                            this.gyroData[k] < this.gyroRanges[k].min ||
-                            this.gyroData[k] > this.gyroRanges[k].max
-                        ) {
-                            this.gyroData[k] += ways[k]
-                                ? -(step * 2)
-                                : step * 2;
-                            ways[k] = !ways[k];
-                        }
-                        this.gyroData[k] = round(this.gyroData[k]);
-                    });
-                }, 100);
-            });
+            .catch((e) => {});
+        // mouse listening
+        window.addEventListener("mousemove", (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+        });
         // creating movement delayed values
         setInterval(() => {
             const beta = this.gyroData.beta,
@@ -121,9 +100,11 @@ Vue.createApp({
                     ) / 10
                 );
             } else {
-                return Math.round(
-                    map(this.mouse.x, 0, window.innerWidth, -20, 20) * 10
-                ) / 10;
+                return (
+                    Math.round(
+                        map(this.mouse.x, 0, window.innerWidth, -20, 20) * 10
+                    ) / 10
+                );
             }
         },
         getPageXRotation: function () {
@@ -149,32 +130,33 @@ Vue.createApp({
                 );
             }
         },
+        getAccentYRotation: function () {
+            return this.getPageYRotation() * -1;
+        },
+        getAccentXRotation: function () {
+            return this.getPageXRotation() * -1;
+        },
     },
     template: `
-      <div class="page" :style="{
-        transform: 'translateZ(-1rem) rotateY('+(getPageYRotation())+'deg) rotateX('+(getPageXRotation())+'deg)',
-      }">
-        <div v-html="msg"></div>
-        <div class="d-flex flex-column w-100">
-            <div class="w-100 d-flex flex-column align-items-center px-5" v-for="k in ['beta', 'gamma']">
-                <caption>{{k}}</caption>
-                <div class="w-100 bar border">
-                    <div class="h-100" :style="{
-                        width: ((gyroData[k] - gyroRanges[k].min) / (gyroRanges[k].max - gyroRanges[k].min) * 100) + '%',
-                    }"></div>
-                </div>
-                <div class="w-100 bar border">
-                    <div class="h-100" :style="{
-                        width: ((getAvg(k) - gyroRanges[k].min) / (gyroRanges[k].max - gyroRanges[k].min) * 100) + '%',
-                    }"></div>
-                </div>
-                <div class="w-100 bar border">
-                    <div class="h-100" :style="{
-                        width: ((gyroData[k + 'Delayed'] - gyroRanges[k].min) / (gyroRanges[k].max - gyroRanges[k].min) * 100) + '%',
-                    }"></div>
-                </div>
+    <div class="wrapper">
+        <div class="page" :style="{
+            transform: 'translateZ(-1rem) rotateY('+(getPageYRotation())+'deg) rotateX('+(getPageXRotation())+'deg)',
+        }">
+            <div class="vert-separator" />
+            <div class="banner large" :style="{
+                transform: 'translateZ(1rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
+            }">
+                <h1>LOREM IPSUM</h1>
+            </div>
+            <div class="visible-content d-flex flex-column" :style="{
+                transform: 'translateZ(2rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
+            }">
+                <div class="spacer" />
+                <h2 class="col-7">LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT</h2>
+                <h3 class="col-5 mt-5">Suspendisse feugiat bibendum nibh, sit amet blandit ante porttitor a. Nullam elementum quam non semper consectetur.</h3>
+                <h4 class="col-9 mt-5">Proin ut enim ut augue dictum malesuada. Proin porta congue nunc vel fringilla. Maecenas eleifend mollis sapien, quis iaculis turpis ultricies id. Sed sed tempor lectus. Nam dapibus metus ac quam efficitur, a eleifend ipsum hendrerit. In mollis sagittis pulvinar.</h4>
             </div>
         </div>
-      </div>
+    </div>
     `,
 }).mount("#app");
