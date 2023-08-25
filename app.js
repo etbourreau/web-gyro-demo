@@ -1,6 +1,6 @@
 const { ref } = Vue;
 
-const round = (x) => Math.round(x * 10) / 10;
+const round = Math.round;
 
 Vue.createApp({
     setup() {
