@@ -17,15 +17,23 @@ Vue.createApp({
             });
             Promise.all(queries).then((results) => {
                 if (results.every((result) => result.state === "granted")) {
-                    gyro.startTracking(function (o) {
-                        this.gyroData = {
-                            alpha: o.alpha,
-                            beta: o.beta,
-                            gamma: o.gamma,
-                        };
-                    });
-                    this.msg += gyro.hasFeature("devicemotion") + "<br/>";
-                    this.msg += JSON.stringify(gyro.getFeatures()) + "<br/>";
+                    this.gyro = new GyroNorm();
+                    this.gyro
+                        .init({
+                            frequency: 30,
+                            gravityNormalized: true,
+                            orientationBase: GyroNorm.GAME,
+                            decimalCount: 2,
+                            logger: (...data) =>
+                                console.log("GyroNorm", ...data),
+                            screenAdjusted: false,
+                        })
+                        .then((data) => {
+                            this.gyroData = data.do;
+                        })
+                        .catch((e) => {
+                            this.msg ="cannot init GyroNorm " + e;
+                        });
                 }
             });
         } catch (e) {
