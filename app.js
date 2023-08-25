@@ -24,6 +24,8 @@ Vue.createApp({
                             gamma: o.gamma,
                         };
                     });
+                    this.msg += gyro.hasFeature("devicemotion") + "<br/>";
+                    this.msg += JSON.stringify(gyro.getFeatures()) + "<br/>";
                 }
             });
         } catch (e) {
