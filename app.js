@@ -1,5 +1,7 @@
 const { ref } = Vue;
 
+const round = (x) => Math.round(x * 10) / 10;
+
 Vue.createApp({
     setup() {
         return {
@@ -28,7 +30,9 @@ Vue.createApp({
                     .then(() => {
                         this.msg = "GyroNorm initialized";
                         this.gyro.start((data) => {
-                            this.gyroData = data;
+                            this.gyroData.alpha = round(data.do.alpha);
+                            this.gyroData.beta = round(data.do.beta);
+                            this.gyroData.gamma = round(data.do.gamma);
                         });
                     })
                     .catch((e) => {
