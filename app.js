@@ -28,11 +28,13 @@ Vue.createApp({
                                 console.log("GyroNorm", ...data),
                             screenAdjusted: false,
                         })
-                        .then((data) => {
-                            this.gyroData = data.do;
+                        .then(() => {
+                            this.gyro.start((data) => {
+                                this.gyroData = data;
+                            });
                         })
                         .catch((e) => {
-                            this.msg ="cannot init GyroNorm " + e;
+                            this.msg = "cannot init GyroNorm " + e;
                         });
                 }
             });
