@@ -3,44 +3,39 @@ const { ref } = Vue;
 Vue.createApp({
     setup() {
         return {
-            sensors: [],
-            gyro: null,
-            gyroData: {},
+            gyro: ref(null),
+            gyroData: ref({}),
             msg: ref(""),
         };
     },
     mounted() {
-        try {
-            const perms = ["accelerometer", "magnetometer", "gyroscope"];
-            const queries = perms.map((perm) => {
-                return navigator.permissions.query({ name: perm });
-            });
-            Promise.all(queries).then((results) => {
-                if (results.every((result) => result.state === "granted")) {
-                    this.gyro = new GyroNorm();
-                    this.gyro
-                        .init({
-                            frequency: 30,
-                            gravityNormalized: true,
-                            orientationBase: GyroNorm.GAME,
-                            decimalCount: 2,
-                            logger: (...data) =>
-                                console.log("GyroNorm", ...data),
-                            screenAdjusted: false,
-                        })
-                        .then(() => {
-                            this.gyro.start((data) => {
-                                this.gyroData = data;
-                            });
-                        })
-                        .catch((e) => {
-                            this.msg = "cannot init GyroNorm " + e;
+        const perms = ["accelerometer", "magnetometer", "gyroscope"];
+        const queries = perms.map((perm) => {
+            return navigator.permissions.query({ name: perm });
+        });
+        Promise.all(queries).then((results) => {
+            if (results.every((result) => result.state === "granted")) {
+                this.gyro = new GyroNorm();
+                this.gyro
+                    .init({
+                        frequency: 30,
+                        gravityNormalized: true,
+                        orientationBase: GyroNorm.GAME,
+                        decimalCount: 2,
+                        logger: (...data) => console.log("GyroNorm", ...data),
+                        screenAdjusted: false,
+                    })
+                    .then(() => {
+                        this.msg = "GyroNorm initialized";
+                        this.gyro.start((data) => {
+                            this.gyroData = data;
                         });
-                }
-            });
-        } catch (e) {
-            this.msg = e;
-        }
+                    })
+                    .catch((e) => {
+                        this.msg = "cannot init GyroNorm " + e;
+                    });
+            }
+        });
 
         ondevicemotion = (e) => {
             this.aclData = e;
