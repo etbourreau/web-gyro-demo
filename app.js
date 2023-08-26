@@ -92,8 +92,8 @@ Vue.createApp({
                     Math.round(
                         map(
                             this.gyroData.gamma,
-                            middle - range / 8,
-                            middle + range / 8,
+                            this.gyroRanges.gamma.min,
+                            this.gyroRanges.gamma.max,
                             45,
                             -45
                         ) * 10
@@ -117,8 +117,8 @@ Vue.createApp({
                     Math.round(
                         map(
                             this.getBetaAvg() - this.gyroData.beta,
-                            middle - range / 8,
-                            middle + range / 8,
+                            -range / 2,
+                            range / 2,
                             90,
                             -90
                         ) * 10
@@ -133,10 +133,10 @@ Vue.createApp({
             }
         },
         getAccentYRotation: function () {
-            return this.getPageYRotation() * .4;
+            return this.getPageYRotation() * 0.4;
         },
         getAccentXRotation: function () {
-            return this.getPageXRotation() * .4;
+            return this.getPageXRotation() * 0.4;
         },
     },
     template: `
