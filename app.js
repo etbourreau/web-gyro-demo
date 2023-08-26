@@ -27,7 +27,6 @@ Vue.createApp({
                 x: window.innerWidth / 2,
                 y: window.innerHeight / 2,
             }),
-            msg: ref(""),
         };
     },
     mounted() {
@@ -88,12 +87,16 @@ Vue.createApp({
         },
         getPageYRotation: function () {
             if (this.isMobile) {
+                const range =
+                    this.gyroRanges.gamma.max - this.gyroRanges.gamma.min;
+                const middle =
+                    (this.gyroRanges.gamma.min + this.gyroRanges.gamma.max) / 2;
                 return (
                     Math.round(
                         map(
-                            this.getAvg("gamma"),
-                            this.gyroRanges.gamma.min,
-                            this.gyroRanges.gamma.max,
+                            this.getAvg("gamma") - this.gyroData.gamma,
+                            middle - range / 8,
+                            middle + range / 8,
                             45,
                             -45
                         ) * 10
@@ -111,12 +114,14 @@ Vue.createApp({
             if (this.isMobile) {
                 const range =
                     this.gyroRanges.beta.max - this.gyroRanges.beta.min;
+                const middle =
+                    (this.gyroRanges.beta.min + this.gyroRanges.beta.max) / 2;
                 return (
                     Math.round(
                         map(
                             this.getAvg("beta") - this.gyroData.beta,
-                            -range * 0.25,
-                            range * 0.25,
+                            middle - range / 8,
+                            middle + range / 8,
                             90,
                             -90
                         ) * 10
@@ -131,10 +136,10 @@ Vue.createApp({
             }
         },
         getAccentYRotation: function () {
-            return this.getPageYRotation() * 0.4;
+            return this.getPageYRotation() * .4;
         },
         getAccentXRotation: function () {
-            return this.getPageXRotation() * 0.4;
+            return this.getPageXRotation() * .4;
         },
     },
     template: `
@@ -152,7 +157,6 @@ Vue.createApp({
             <div class="visible-content d-flex flex-column" :style="{
                 transform: 'translateZ(175rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
             }">
-                <span v-if="isMobile">{{gyroData}}</span>
                 <div class="spacer" />
                 <div class="flex-grow-1 d-flex flex-column justify-content-evenly">
                     <h2 class="col-12 col-md-8 mt-3">LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT</h2>
