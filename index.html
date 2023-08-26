@@ -3,7 +3,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Interactive Movements Page - DEMO</title>
+        <meta http-equiv="ScreenOrientation" content="autoRotate:disabled" />
+        <title>Web Gyro - DEMO</title>
 
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <link
@@ -12,10 +13,35 @@
         />
         <script src="gyronorm.complete.min.js"></script>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                background-color: #333;
+            }
+        </style>
     </head>
     <body>
-        <div id="app" class="d-flex justify-content-center align-items-center flex-column"></div>
-        <script src="app.js?v=12"></script>
+        <div
+            id="app"
+            class="d-flex justify-content-center align-items-center flex-column"
+        ></div>
+        <script>
+            document.body.onload = () => {
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "style.css?v=" + new Date().getTime();
+                document.head.appendChild(link);
+
+                const script = document.createElement("script");
+                script.src = `app.js?v=${new Date().getTime()}`;
+                script.async = true;
+                document.body.appendChild(script);
+            };
+        </script>
     </body>
 </html>

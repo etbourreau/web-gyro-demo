@@ -102,7 +102,7 @@ Vue.createApp({
             } else {
                 return (
                     Math.round(
-                        map(this.mouse.x, 0, window.innerWidth, -20, 20) * 10
+                        map(this.mouse.x, 0, window.innerWidth, -10, 10) * 10
                     ) / 10
                 );
             }
@@ -125,36 +125,39 @@ Vue.createApp({
             } else {
                 return (
                     Math.round(
-                        map(this.mouse.y, 0, window.innerHeight, 10, -10) * 10
+                        map(this.mouse.y, 0, window.innerHeight, 7, -7) * 10
                     ) / 10
                 );
             }
         },
         getAccentYRotation: function () {
-            return this.getPageYRotation() * -1;
+            return this.getPageYRotation() * 0.4;
         },
         getAccentXRotation: function () {
-            return this.getPageXRotation() * -1;
+            return this.getPageXRotation() * 0.4;
         },
     },
     template: `
     <div class="wrapper">
-        <div class="page" :style="{
-            transform: 'translateZ(-1rem) rotateY('+(getPageYRotation())+'deg) rotateX('+(getPageXRotation())+'deg)',
-        }">
+        <div class="page">
+            <div class="bg" :style="{
+                transform: 'translateZ(-200rem) rotateY('+(getPageYRotation())+'deg) rotateX('+(getPageXRotation())+'deg)',
+            }" />
             <div class="vert-separator" />
             <div class="banner large" :style="{
-                transform: 'translateZ(1rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
+                transform: 'translateZ(150rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
             }">
                 <h1>LOREM IPSUM</h1>
             </div>
             <div class="visible-content d-flex flex-column" :style="{
-                transform: 'translateZ(2rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
+                transform: 'translateZ(175rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
             }">
                 <div class="spacer" />
-                <h2 class="col-7">LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT</h2>
-                <h3 class="col-5 mt-5">Suspendisse feugiat bibendum nibh, sit amet blandit ante porttitor a. Nullam elementum quam non semper consectetur.</h3>
-                <h4 class="col-9 mt-5">Proin ut enim ut augue dictum malesuada. Proin porta congue nunc vel fringilla. Maecenas eleifend mollis sapien, quis iaculis turpis ultricies id. Sed sed tempor lectus. Nam dapibus metus ac quam efficitur, a eleifend ipsum hendrerit. In mollis sagittis pulvinar.</h4>
+                <div class="flex-grow-1 d-flex flex-column justify-content-evenly">
+                    <h2 class="col-12 col-md-8 mt-3">LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT</h2>
+                    <h3 class="col-12 col-md-8 mt-3">Suspendisse feugiat bibendum nibh, sit amet blandit ante porttitor a. Nullam elementum quam non semper consectetur.</h3>
+                    <h4 class="col-12 col-md-8 mt-3">Proin ut enim ut augue dictum malesuada. Proin porta congue nunc vel fringilla. Maecenas eleifend mollis sapien, quis iaculis turpis ultricies id. Sed sed tempor lectus. Nam dapibus metus ac quam efficitur, a eleifend ipsum hendrerit. In mollis sagittis pulvinar.</h4>
+                </div>
             </div>
         </div>
     </div>

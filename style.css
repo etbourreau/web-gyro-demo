@@ -1,3 +1,28 @@
+:root {
+    /* screen */
+    --vw: 100vw;
+    --vh: 100vh;
+    /* background is larger to fit with tranform */
+    --dvh: 100dvh;
+    --bgvw: 300vw;
+    --bgvh: 300dvh;
+    --bgdvh: 300vh;
+    /* margins to fit content in screen */
+    --mw: 110vw;
+    --mh: 110vh;
+
+    --banner-height: 7rem;
+}
+@font-face {
+    font-family: Gotham;
+    src: url("./assets/fonts/Gotham Light.otf");
+}
+@font-face {
+    font-family: Gotham;
+    font-weight: bold;
+    src: url("./assets/fonts/Gotham Ultra.otf");
+}
+
 html,
 body {
     margin: 0;
@@ -6,78 +31,96 @@ body {
 }
 body {
     background-color: #222;
+    font-family: Gotham, sans-serif;
 }
 body,
 #app {
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    width: var(--vw);
+    height: var(--vh);
+    height: var(--dvh);
 }
 
 /* GENERAL */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
-}
-h1 {
-    font-size: clamp(3rem, 10vw ,6rem);
-}
-h2 {
-    font-size: clamp(2rem, 4vw ,4rem);
 }
 
 /* PAGES */
 .wrapper {
-    width: 200vw;
-    height: 200vh;
-    height: 200dvh;
+    width: var(--bgvw);
+    height: var(--bgvh);
+    height: var(--bgdvh);
 
-    perspective: 50rem;
-}
-.page:nth-child(1) {
-    background: url("./assets/pages/01-bg.webp") no-repeat center center / contain;
-}
-.page:nth-child(1) .visible-content {
-    color: #ddd;
-    text-shadow: 1px 1px 2px #333;
-}
-.page:nth-child(1) .visible-content > .spacer {
-    height: 19vh;
+    perspective: 200rem;
 }
 .page {
     position: relative;
     width: 100%;
-    height: 200vh;
-    height: 200dvh;
+    height: var(--bgvh);
+    height: var(--bgdvh);
     display: flex;
     align-items: center;
     flex-direction: column;
-
+}
+.page .bg {
+    position: absolute;
+    inset: 0 0 0 0;
     transform-style: flat;
     perspective-origin: center;
-    transition: transform .2s;
-
+    transition: transform 0.2s;
 }
 .page .vert-separator {
     width: 100%;
-    height: 54vh;
+    height: var(--mh);
 }
 .page .visible-content {
     width: 100%;
     height: 100%;
     position: absolute;
     inset: 0;
-    padding: 56vh 56vw;
+    padding: var(--mh) var(--mw);
 }
 
 .banner {
     width: 100%;
-    height: 7rem;
+    height: var(--banner-height);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(221, 221, 221, .7);
+    background-color: rgba(221, 221, 221, 0.7);
 }
 
+/* PAGE SPECIFIC CONTENT */
+.page:nth-child(1) .bg {
+    background: url("./assets/pages/01-bg.webp") no-repeat center center /
+        contain;
+}
+.page:nth-child(1) .visible-content {
+    color: #ddd;
+    text-shadow: 1px 1px 2px #333;
+}
+.page:nth-child(1) .visible-content > .spacer {
+    display: block;
+    min-height: var(--banner-height);
+}
+.page:nth-child(1) h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2rem, 10vw, 6rem);
+}
+.page:nth-child(1) h2 {
+    font-size: clamp(1.4rem, 6vw, 2.3rem);
+}
+.page:nth-child(1) h3 {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+}
+.page:nth-child(1) h4 {
+    font-size: clamp(.9rem, 4vw, 1.1rem);
+}
 
 /* DEBUG */
 .bar {
@@ -85,5 +128,5 @@ h2 {
 }
 .bar > div {
     background-color: #0275d8;
-    transition: width .2s;
+    transition: width 0.2s;
 }
