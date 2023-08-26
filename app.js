@@ -9,7 +9,6 @@ Vue.createApp({
             isMobile: false,
             gyroData: ref({
                 beta: 0,
-                betaDelayed: 0,
                 gamma: 0,
                 gammaDelayed: 0,
             }),
@@ -55,12 +54,10 @@ Vue.createApp({
         });
         // creating movement delayed values
         setInterval(() => {
-            const beta = this.gyroData.beta,
-                gamma = this.gyroData.gamma;
+            const beta = this.gyroData.beta;
             setTimeout(() => {
                 this.gyroData.betaDelayed = beta;
-                this.gyroData.gammaDelayed = gamma;
-            }, 500);
+            }, 3000);
         }, 50);
 
         ondevicemotion = (e) => {
@@ -68,11 +65,11 @@ Vue.createApp({
         };
     },
     methods: {
-        getAvg: function (k) {
-            const current = this.gyroData[k];
-            const delayed = this.gyroData[k + "Delayed"];
-            const min = this.gyroRanges[k].min;
-            const max = this.gyroRanges[k].max;
+        getBetaAvg: function () {
+            const current = this.gyroData.beta;
+            const delayed = this.gyroData.betaDelayed;
+            const min = this.gyroRanges.beta.min;
+            const max = this.gyroRanges.beta.max;
             const range = max - min;
             const middle = (min + max) / 2;
             const margin = range * 0.1;
@@ -94,7 +91,7 @@ Vue.createApp({
                 return (
                     Math.round(
                         map(
-                            this.getAvg("gamma") - this.gyroData.gamma,
+                            this.gyroData.gamma,
                             middle - range / 8,
                             middle + range / 8,
                             45,
@@ -119,7 +116,7 @@ Vue.createApp({
                 return (
                     Math.round(
                         map(
-                            this.getAvg("beta") - this.gyroData.beta,
+                            this.getBetaAvg() - this.gyroData.beta,
                             middle - range / 8,
                             middle + range / 8,
                             90,
