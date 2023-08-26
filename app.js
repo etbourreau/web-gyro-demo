@@ -152,6 +152,7 @@ Vue.createApp({
             <div class="visible-content d-flex flex-column" :style="{
                 transform: 'translateZ(175rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
             }">
+                <span v-if="isMobile">{{gyroData}}</span>
                 <div class="spacer" />
                 <div class="flex-grow-1 d-flex flex-column justify-content-evenly">
                     <h2 class="col-12 col-md-8 mt-3">LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT</h2>
