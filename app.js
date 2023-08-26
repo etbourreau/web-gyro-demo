@@ -2,6 +2,7 @@ const { ref } = Vue;
 
 const round = Math.round;
 const map = (v2, s1, e1, s2, e2) => ((v2 - s1) * (e2 - s2)) / (e1 - s1) + s2;
+const lerp = (a, b, t) => (1 - t) * a + t * b;
 
 Vue.createApp({
     setup() {
@@ -9,8 +10,8 @@ Vue.createApp({
             isMobile: false,
             gyroData: ref({
                 beta: 0,
+                betaDelayed: 0,
                 gamma: 0,
-                gammaDelayed: 0,
             }),
             gyroRanges: {
                 beta: {
@@ -22,10 +23,24 @@ Vue.createApp({
                     max: 90,
                 },
             },
+            bgoffset: {
+                x: 0,
+                y: 0,
+            },
+            contentoffset: {
+                x: 0,
+                y: 0,
+            },
+            noiseoffset: ref({
+                proc: null,
+                x: 0,
+                y: 0,
+            }),
             mouse: ref({
                 x: window.innerWidth / 2,
                 y: window.innerHeight / 2,
             }),
+            perspective: 200,
         };
     },
     mounted() {
@@ -57,37 +72,66 @@ Vue.createApp({
             const beta = this.gyroData.beta;
             setTimeout(() => {
                 this.gyroData.betaDelayed = beta;
-            }, 3000);
+            }, 1000);
         }, 50);
-
-        ondevicemotion = (e) => {
-            this.aclData = e;
+        // creating noise movement
+        const updateNoise = () => {
+            const range = 1;
+            const x =
+                Math.round((Math.random() * range - range / 2) * 100) / 100;
+            const y =
+                Math.round((Math.random() * range - range / 2) * 100) / 100;
+            for (let t = 0; t < 2000; t++) {
+                setTimeout(() => {
+                    this.noiseoffset.x = lerp(this.noiseoffset.x, x, 1 / 2000);
+                    this.noiseoffset.y = lerp(this.noiseoffset.y, y, 1 / 2000);
+                }, t + 1);
+            }
         };
+        this.noiseoffset.proc = setInterval(updateNoise, 2000);
+        updateNoise();
+    },
+    watch: {
+        "mouse.x": function (to) {
+            this.updateOffsets();
+        },
+        "mouse.y": function (to) {
+            this.updateOffsets();
+        },
     },
     methods: {
-        getBetaAvg: function () {
-            const current = this.gyroData.beta;
-            const delayed = this.gyroData.betaDelayed;
-            const min = this.gyroRanges.beta.min;
-            const max = this.gyroRanges.beta.max;
-            const range = max - min;
-            const middle = (min + max) / 2;
-            const margin = range * 0.1;
-            const computedDelayed =
-                current < min + margin && delayed > middle
-                    ? delayed - range
-                    : current > max - margin && delayed < middle
-                    ? delayed + range
-                    : delayed;
-            let avg = (current + computedDelayed) / 2;
-            return avg + (avg < min ? range : avg > max ? -range : 0);
+        updateOffsets: function () {
+            const beta = this.getPageXRotation();
+            const betaRange =
+                this.gyroRanges.beta.max - this.gyroRanges.beta.min;
+            const betaPow = this.isMobile ? 20 : 20;
+            this.bgoffset.y = map(
+                beta,
+                -betaRange / 2,
+                betaRange / 2,
+                -betaPow,
+                betaPow
+            );
+
+            const gamma = this.getPageYRotation();
+            const gammaPow = this.isMobile ? -10 : -10;
+            this.bgoffset.x = map(
+                gamma,
+                this.gyroRanges.gamma.min,
+                this.gyroRanges.gamma.max,
+                -gammaPow,
+                gammaPow
+            );
+
+            ["x", "y"].forEach((k) => {
+                this.bgoffset[k] = Math.round(this.bgoffset[k] * 100) / 100;
+            });
+
+            this.contentoffset.x = -this.bgoffset.x;
+            this.contentoffset.y = -this.bgoffset.y;
         },
         getPageYRotation: function () {
             if (this.isMobile) {
-                const range =
-                    this.gyroRanges.gamma.max - this.gyroRanges.gamma.min;
-                const middle =
-                    (this.gyroRanges.gamma.min + this.gyroRanges.gamma.max) / 2;
                 return (
                     Math.round(
                         map(
@@ -111,12 +155,10 @@ Vue.createApp({
             if (this.isMobile) {
                 const range =
                     this.gyroRanges.beta.max - this.gyroRanges.beta.min;
-                const middle =
-                    (this.gyroRanges.beta.min + this.gyroRanges.beta.max) / 2;
                 return (
                     Math.round(
                         map(
-                            this.getBetaAvg() - this.gyroData.beta,
+                            this.gyroData.beta - this.gyroData.betaDelayed,
                             -range / 2,
                             range / 2,
                             90,
@@ -138,21 +180,53 @@ Vue.createApp({
         getAccentXRotation: function () {
             return this.getPageXRotation() * 0.4;
         },
+        getBGTransformStyle: function () {
+            const parts = [];
+            // offset
+            const x = this.bgoffset.x + this.noiseoffset.x*.2;
+            const y = this.bgoffset.y + this.noiseoffset.y*.2;
+            parts.push(
+                `translate3d(${x}rem, ${y}rem, ${-this.perspective}rem)`
+            );
+            // rotation Y
+            parts.push(`rotateY(${this.getPageYRotation()}deg)`);
+            // rotation X
+            parts.push(`rotateX(${this.getPageXRotation()}deg)`);
+
+            return parts.join(" ");
+        },
+        getContentTransformStyle: function (distance) {
+            const parts = [];
+            // offset
+            const x = this.contentoffset.x - this.noiseoffset.x;
+            const y = this.contentoffset.y - this.noiseoffset.y;
+            parts.push(
+                `translate3d(${x}rem, ${y}rem, ${-distance}rem)`
+            )
+            // rotation Y
+            parts.push(`rotateY(${this.getPageYRotation()}deg)`);
+            // rotation X
+            parts.push(`rotateX(${this.getPageXRotation()}deg)`);
+            
+            return parts.join(" ");
+        },
     },
     template: `
-    <div class="wrapper">
+    <div class="wrapper" :style="{
+        perspective: perspective+'rem',
+    }">
         <div class="page">
             <div class="bg" :style="{
-                transform: 'translateZ(-200rem) rotateY('+(getPageYRotation())+'deg) rotateX('+(getPageXRotation())+'deg)',
+                transform: getBGTransformStyle(),
             }" />
             <div class="vert-separator" />
             <div class="banner large" :style="{
-                transform: 'translateZ(150rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
+                transform: getContentTransformStyle(perspective/4),
             }">
                 <h1>LOREM IPSUM</h1>
             </div>
             <div class="visible-content d-flex flex-column" :style="{
-                transform: 'translateZ(175rem) rotateX('+(getAccentXRotation())+'deg) rotateY('+(getAccentYRotation())+'deg)',
+                transform: getContentTransformStyle(perspective/8),
             }">
                 <div class="spacer" />
                 <div class="flex-grow-1 d-flex flex-column justify-content-evenly">

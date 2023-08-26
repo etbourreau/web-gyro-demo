@@ -55,8 +55,6 @@ h6 {
     width: var(--bgvw);
     height: var(--bgvh);
     height: var(--bgdvh);
-
-    perspective: 200rem;
 }
 .page {
     position: relative;
@@ -72,7 +70,6 @@ h6 {
     inset: 0 0 0 0;
     transform-style: flat;
     perspective-origin: center;
-    transition: transform 0.2s;
 }
 .page .vert-separator {
     width: 100%;
